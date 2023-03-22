@@ -134,6 +134,32 @@ class WithNMedCores(n: Int, overrideIdOffset: Option[Int] = None) extends Config
   }
 })
 
+class WithNSoftCores(n: Int, overrideIdOffset: Option[Int] = None) extends Config((site, here, up) => {
+  case RocketTilesKey => {
+    val prev = up(RocketTilesKey, site)
+    val idOffset = overrideIdOffset.getOrElse(prev.size)
+    val small = RocketTileParams(
+      core = RocketCoreParams(useVM = true, fpu = None),
+      btb = None,
+      dcache = Some(DCacheParams(
+        rowBits = site(SystemBusKey).beatBits,
+        nSets = 64,
+        nWays = 1,
+        nTLBSets = 1,
+        nTLBWays = 4,
+        nMSHRs = 0,
+        blockBytes = site(CacheBlockBytes))),
+      icache = Some(ICacheParams(
+        rowBits = site(SystemBusKey).beatBits,
+        nSets = 64,
+        nWays = 1,
+        nTLBSets = 1,
+        nTLBWays = 4,
+        blockBytes = site(CacheBlockBytes))))
+    List.tabulate(n)(i => small.copy(hartId = i + idOffset)) ++ prev
+  }
+})
+
 class WithNSmallCores(n: Int, overrideIdOffset: Option[Int] = None) extends Config((site, here, up) => {
   case RocketTilesKey => {
     val prev = up(RocketTilesKey, site)
