@@ -140,7 +140,6 @@ class WithNSoftCores(n: Int, overrideIdOffset: Option[Int] = None) extends Confi
     val idOffset = overrideIdOffset.getOrElse(prev.size)
     val soft = RocketTileParams(
       core = RocketCoreParams(useVM = true, fpu = None),
-      btb = None,
       dcache = Some(DCacheParams(
         rowBits = site(SystemBusKey).beatBits,
         nSets = 64,
