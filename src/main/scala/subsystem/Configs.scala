@@ -139,22 +139,17 @@ class WithNSoftCores(n: Int, overrideIdOffset: Option[Int] = None) extends Confi
     val prev = up(RocketTilesKey, site)
     val idOffset = overrideIdOffset.getOrElse(prev.size)
     val soft = RocketTileParams(
-      core = RocketCoreParams(),
+      core   = RocketCoreParams(mulDiv = Some(MulDivParams(
+        mulUnroll = 8,
+        mulEarlyOut = true,
+        divEarlyOut = true))),
       btb = None,
       dcache = Some(DCacheParams(
         rowBits = site(SystemBusKey).beatBits,
-        nSets = 64,
-        nWays = 1,
-        nTLBSets = 1,
-        nTLBWays = 4,
         nMSHRs = 0,
         blockBytes = site(CacheBlockBytes))),
       icache = Some(ICacheParams(
         rowBits = site(SystemBusKey).beatBits,
-        nSets = 64,
-        nWays = 1,
-        nTLBSets = 1,
-        nTLBWays = 4,
         blockBytes = site(CacheBlockBytes))))
     List.tabulate(n)(i => soft.copy(hartId = i + idOffset)) ++ prev
   }
