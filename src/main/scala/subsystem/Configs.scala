@@ -143,7 +143,13 @@ class WithNSoftCores(n: Int, overrideIdOffset: Option[Int] = None) extends Confi
         mulUnroll = 8,
         mulEarlyOut = true,
         divEarlyOut = true))),
-      btb = None,
+      btb = BTBParams(nEntries = 0,
+        nMatchBits = 0, // Will get this value from cache
+        nPages = 2,
+        bhtParams = BHTParams(
+          nEntries = 256,
+          historyLength = 4,
+          historyBits = 2)),
       dcache = Some(DCacheParams(
         rowBits = site(SystemBusKey).beatBits,
         nMSHRs = 0,
